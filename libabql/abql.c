@@ -4,9 +4,9 @@
 
 #include "abql.h"
 
-ABQL *ABQL_Create(int queue_sz) {
+struct ABQL *ABQL_Create(int queue_sz) {
 	// malloc the struct
-	ABQL *l = malloc(sizeof(ABQL));
+	struct ABQL *l = malloc(sizeof(struct ABQL));
 	// malloc the array
 	l->queue_sz = queue_sz;
 	l->arr = malloc(queue_sz * sizeof(int));
@@ -19,7 +19,7 @@ ABQL *ABQL_Create(int queue_sz) {
 	return l;
 }
 
-atomic_int ABQL_Lock(ABQL *l) {
+atomic_int ABQL_Lock(struct ABQL *l) {
 	// if we're here, we can safely grab a ticket and start waiting on the flag
 	atomic_int ticket = atomic_fetch_add (&l->ticket, 1);
 	// wait until the number waiting in queue is < queue_sz (since we don't want
@@ -34,7 +34,7 @@ atomic_int ABQL_Lock(ABQL *l) {
 	return ticket;
 }
 
-void ABQL_Unlock(ABQL *l, atomic_int ticket) {
+void ABQL_Unlock(struct ABQL *l, atomic_int ticket) {
 	l->arr[ticket % l->queue_sz] = 0;
 	l->arr[(ticket + 1) % l->queue_sz] = 1;
 	atomic_fetch_add(&(l->dequeueCount), 1);

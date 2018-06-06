@@ -6,14 +6,14 @@
 #include "utils.h"
 
 typedef struct {
-	ABQL *l;
+	struct ABQL *l;
 	int id;
 } LockerArgs;
 
 void *locker(void *lockerArgs) {
 
 	LockerArgs *args = (LockerArgs*)lockerArgs;
-	ABQL *l = args->l;
+	struct ABQL *l = args->l;
 	int id = args->id;
 	free(lockerArgs);
 
@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
 	pthread_t *pthread_locker_ids = malloc(N_LOCKERS * sizeof(pthread_t));
 
 	// the lock
-	ABQL *l = ABQL_Create(4);
+	struct ABQL *l = ABQL_Create(4);
 
 	// start the locker threads
 	for (int i = 0; i < N_LOCKERS; i++) {
