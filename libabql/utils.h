@@ -3,4 +3,4 @@
 
 void printfflush(char *format, ...);
 int SLEEP_MS(int ms);
-#endif
+#endif /* UTILS_H */
