@@ -4,6 +4,7 @@ package main
 #cgo CFLAGS: -I${SRCDIR}/libabql
 #cgo LDFLAGS: -L${SRCDIR}/libabql -labql
 #include "abql.h"
+#include <time.h>
 */
 import "C"
 
@@ -12,7 +13,8 @@ type C_ABQL struct {
 }
 
 func NewC_ABQL() *C_ABQL {
-	return &C_ABQL{C.ABQL_Create(QUEUE_SZ)}
+	timespec := C.struct_timespec{0, SLEEP_NS}
+	return &C_ABQL{C.ABQL_Create(QUEUE_SZ, &timespec)}
 }
 
 func (l *C_ABQL) Lock() int {

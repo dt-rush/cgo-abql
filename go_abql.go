@@ -25,10 +25,10 @@ func NewGo_ABQL() *Go_ABQL {
 func (l *Go_ABQL) Lock() int {
 	ticket := atomic.AddUint32(&l.ticket, 1) - 1
 	for ticket-atomic.LoadUint32(&l.dequeueCount) >= uint32(l.queue_sz) {
-		time.Sleep(time.Microsecond)
+		time.Sleep(SLEEP_NS * time.Nanosecond)
 	}
 	for l.arr[ticket%uint32(l.queue_sz)] != 1 {
-		time.Sleep(time.Microsecond)
+		time.Sleep(SLEEP_NS * time.Nanosecond)
 	}
 	return int(ticket)
 }

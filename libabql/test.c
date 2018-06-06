@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <time.h>
 
 #include "abql.h"
 #include "utils.h"
@@ -36,7 +37,9 @@ int main (int argc, char *argv[]) {
 	pthread_t *pthread_locker_ids = malloc(N_LOCKERS * sizeof(pthread_t));
 
 	// the lock
-	struct ABQL *l = ABQL_Create(4);
+	// configured to sleep for a microsecond while spinning
+	struct timespec sleep = {0, 1000};
+	struct ABQL *l = ABQL_Create(4, &sleep);
 
 	// start the locker threads
 	for (int i = 0; i < N_LOCKERS; i++) {

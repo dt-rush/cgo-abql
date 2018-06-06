@@ -1,14 +1,17 @@
 #include <stdlib.h>
 #include <stdatomic.h>
 #include <string.h>
+#include <time.h>
 
 #include "abql.h"
 
-struct ABQL *ABQL_Create(int queue_sz) {
+struct ABQL *ABQL_Create(int queue_sz, struct timespec *sleep) {
 	// malloc the struct
 	struct ABQL *l = malloc(sizeof(struct ABQL));
-	// malloc the array
+	// set basic members
 	l->queue_sz = queue_sz;
+	l->sleep = sleep;
+	// malloc the array
 	l->arr = malloc(queue_sz * sizeof(int));
 	memset(l->arr, 0, queue_sz * sizeof(int));
 	// set the first flag to 1
@@ -26,10 +29,10 @@ atomic_int ABQL_Lock(struct ABQL *l) {
 	// to wrap around and jump the queue by waiting on a flag which is already
 	// being waited-on
 	while (ticket - atomic_load(&l->dequeueCount) >= l->queue_sz) {
-		nanosleep(ABQL_SLEEP_MICROSECOND);
+		nanosleep(l->sleep, NULL);
 	}
 	while (l->arr[ticket % l->queue_sz] != 1) {
-		nanosleep(ABQL_SLEEP_MICROSECOND);
+		nanosleep(l->sleep, NULL);
 	}
 	return ticket;
 }
